@@ -30,6 +30,16 @@ export default function DashProfile() {
   const hanldeSubmit = async(e) => {
     e.preventDefault()
     setUpdateUserError(null)
+    if(Object.keys(formData).length === 0 && imageloadingSuccess){
+      if(Object.keys(formData).length === 0) {
+        setUpdateUserError("There is nothing to change")
+        return
+      }
+      else{
+        setUpdateUserError("Please wait for image to Upload")
+        return
+      }
+    }
     if(Object.keys(formData).length === 0) {
       setUpdateUserError("There is nothing to change")
       return
