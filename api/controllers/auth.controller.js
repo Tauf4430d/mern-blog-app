@@ -38,16 +38,14 @@ const signin = async (req, res, next) => {
     try {
       const user = await USER.findOne({email})
       if(!user) {
-        console.log('inside !user')
         return next(errorHandler(404, "Invalid Username or Password"))
       }
       const validPassword = bycryptjs.compareSync(password, user.password)
       if(!validPassword) {
-        console.log('inside !password')
         return next(errorHandler(400, "Invalid Username or Password"))
       }
       const token = jwt.sign({
-        id:user._id,
+        id:user._id, isAdmin: user.isAdmin,
       }, process.env.JWT_SECRET)
       const {password : pass, ...rest} = user._doc
       res.status(200).cookie('access_token', token, {
@@ -63,7 +61,7 @@ const google = async (req, res, next) => {
   try {
     const user =await USER.findOne({email})
     if(user) {
-      const token = jwt.sign({id: user._id,} ,process.env.JWT_SECRET)
+      const token = jwt.sign({id: user._id, isAdmin : user.isAdmin} ,process.env.JWT_SECRET)
       const { password, ...rest } = user._doc
       res.status(200).cookie("access-token", token,  {
         httpOnly:true,
@@ -78,7 +76,7 @@ const google = async (req, res, next) => {
         profilePicture:googlePhotoUrl,
       })
       await validUser.save()
-      const token = jwt.sign({id:validUser._id}, process.env.JWT_SECRET)
+      const token = jwt.sign({id:validUser._id, isAdmin: validUser.isAdmin}, process.env.JWT_SECRET)
       const { password, ...rest } = validUser._doc
       res.status(200).cookie('access-token', token, {
         httpOnly:true,

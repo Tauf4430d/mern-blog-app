@@ -54,7 +54,7 @@ export default function Header() {
                     <Dropdown arrowIcon={false} inline label={
                         <Avatar 
                         alt='user'
-                        img={currentUser.profilePicture}
+                        img={currentUser.profilePhoto}
                         rounded
                         />
                     } >
