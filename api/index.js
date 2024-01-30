@@ -4,7 +4,7 @@ const cors = require('cors')
 const dotenv = require('dotenv')
 const userRouter = require('./routes/user.route.js')
 const authRouter = require('./routes/auth.route.js')
-const verifyToken = require('./utils/verifyUser.js')
+const postRouter = require('./routes/post.route.js')
 const cookieParser = require('cookie-parser')
 dotenv.config()
 mongoose.connect(process.env.MONGO_DB).then(()=> console.log('mongo connected')).catch((err) => console.log(err))
@@ -14,6 +14,7 @@ app.use(express.json())
 app.use(cors())
 app.use('/api/user', userRouter)
 app.use('/api/auth', authRouter)
+app.use('/api/post', postRouter)
 
 app.use((error, req, res, next) => {
     const statusCode = error.statusCode || 500
