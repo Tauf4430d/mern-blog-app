@@ -7,10 +7,10 @@ import { app } from '../firebase'
 import { updateFailure, updateStart, updateSuccess, deleteUserFailure, deleteUserStart, deleteUserSuccess, signoutSuccess } from "../redux/user/userSlice"
 import { useDispatch } from "react-redux"
 import { CircularProgressbar } from 'react-circular-progressbar';
-
+import { Link } from 'react-router-dom'
 import 'react-circular-progressbar/dist/styles.css';
 export default function DashProfile() {
-  const { currentUser, error } = useSelector(state => state.user)
+  const { currentUser, error, loading } = useSelector(state => state.user)
   const [imageFile, setImageFile] = useState(null)
   const [imageFileURL, setImageFileURL] = useState(null)
   const [imageFileUploading, setImageUploading] = useState(null)
@@ -159,9 +159,20 @@ export default function DashProfile() {
         <TextInput type="text" id="username" placeholder="username" defaultValue={currentUser.username} onChange={handleChange} />
         <TextInput type="email" id="email" placeholder="email" defaultValue={currentUser.email} onChange={handleChange} />
         <TextInput type="password" id="password" placeholder="*********" onChange={handleChange} />
-        <Button type='submit' outline gradientDuoTone='purpleToBlue' >
-          Update
+        <Button type='submit' outline gradientDuoTone='purpleToBlue' disabled={loading || imageloadingSuccess}>
+          {loading ? 'Loading...' : 'Update'}
         </Button>
+        {
+          currentUser.isAdmin && (
+            <Link to={'/create-post'}>
+              <Button type="button" gradientDuoTone='purpleToPink'
+            className="w-full"
+            >
+              Create a Post
+            </Button>
+            </Link>
+          )
+        }
       </form>
       <div className="text-red-500 flex justify-between mt-5">
         <span onClick={() => setShowModel(true)} className="cursor-pointer">Delete Account</span>
