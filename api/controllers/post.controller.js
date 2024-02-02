@@ -7,7 +7,12 @@ const create = async (req, res, next) => {
     if(!req.body.title || !req.body.content) {
       return next(errorHandler(403, 'Please provide all require fields'))
     }
-    const slug = req.body.title.split(' ').join('-').toLowerCase().replace(/[^a-zA-Z0-9-]/g, '')
+    const trimmedTitle = req.body.title.trim();
+    const slug = trimmedTitle
+    .split(/\s+/)
+    .join('-')
+    .toLowerCase()
+    .replace(/[^a-zA-Z0-9-_]/g, '');
     const post = new POST({
       ...req.body, slug, userId:req.user.id
     })
