@@ -33,7 +33,7 @@ const getPosts = async(req, res, next) => {
       ...(req.query.userId && { userId : req.query.userId }),
       ...(req.query.category && { category : req.query.category }),
       ...(req.query.slug && { slug : req.query.slug }),
-      ...(req.query.postId && { postId : req.query.postId }),
+      ...(req.query.postId && { _id : req.query.postId }),
       ...(req.query.searchTerm && { 
         $or: [
           { title : { $regex: req.query.searchTerm, $options: 'i'}},
@@ -43,7 +43,7 @@ const getPosts = async(req, res, next) => {
     }).sort({ updatedAt : sortDirection}).skip(startIndex).limit(limit)
 
     const totalPosts = await POST.countDocuments()
-
+    console.log(posts);
     const now =new Date()
     const oneMonthAgo = new Date(
       now.getFullYear(),
@@ -77,8 +77,31 @@ const deletePost = async (req, res, next) => {
   }
 }
 
+const updatePost = async(req, res, next) => {
+  if(!req.user.isAdmin || req.user.id != req.params.userId) {
+    return next(errorHandler(403, "You are not allowed to delete this Post"))
+  }
+  try {
+    const updatePost = await POST.findByIdAndUpdate(
+      req.params.postId,
+      {
+        $set: {
+          title: req.body.title,
+          content: req.body.content,
+          category: req.body.category,
+          image: req.body.image,
+        }
+      }, { new : true }
+    )
+    res.status(200).json(updatePost)
+  }catch(error) {
+    next(error)
+  }
+} 
+
 module.exports = {
   create,
   getPosts,
-  deletePost
+  deletePost,
+  updatePost,
 }
