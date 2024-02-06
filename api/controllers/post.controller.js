@@ -1,5 +1,6 @@
 const {errorHandler} = require('../utils/error')
 const POST = require('../models/post.model')
+const { default: mongoose } = require('mongoose')
 const create = async (req, res, next) => {
     if(!req.user.isAdmin) {
       return next(errorHandler(403, 'You are not allowed to create a post'))
@@ -43,7 +44,6 @@ const getPosts = async(req, res, next) => {
     }).sort({ updatedAt : sortDirection}).skip(startIndex).limit(limit)
 
     const totalPosts = await POST.countDocuments()
-    console.log(posts);
     const now =new Date()
     const oneMonthAgo = new Date(
       now.getFullYear(),
@@ -77,13 +77,15 @@ const deletePost = async (req, res, next) => {
   }
 }
 
-const updatePost = async(req, res, next) => {
-  if(!req.user.isAdmin || req.user.id != req.params.userId) {
-    return next(errorHandler(403, "You are not allowed to delete this Post"))
-  }
+const updatePost = async (req, res, next) => {
   try {
-    const updatePost = await POST.findByIdAndUpdate(
-      req.params.postId,
+    if (!req.params.postId) {
+      return res.status(400).json({ error: 'postId parameter is missing' });
+    }
+
+    const postId = req.params.postId;
+    const updatedPost = await POST.findByIdAndUpdate(
+      postId,
       {
         $set: {
           title: req.body.title,
@@ -91,13 +93,21 @@ const updatePost = async(req, res, next) => {
           category: req.body.category,
           image: req.body.image,
         }
-      }, { new : true }
-    )
-    res.status(200).json(updatePost)
-  }catch(error) {
-    next(error)
+      },
+      { new: true }
+    );
+
+    if (!updatedPost) {
+      return res.status(404).json({ error: 'Post not found' });
+    }
+
+    res.status(200).json(updatedPost);
+  } catch (error) {
+    // Handle any other errors
+    next(error);
   }
-} 
+};
+
 
 module.exports = {
   create,
