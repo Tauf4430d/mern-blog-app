@@ -9,7 +9,6 @@ const verifyToken = (req, res, next) => {
     if(err) {
       return next(errorHandler(401, "Unauthorized"))
     }
-    console.log(req.body);
     req.user = user
     next()
   })

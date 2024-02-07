@@ -4,7 +4,6 @@ const {errorHandler} = require('../utils/error.js')
 const jwt = require('jsonwebtoken')
 const signup = async (req, res, next) => {
   const { username, email, password } = req.body;
-  console.log(req.body)
   if (
     !username ||
     !email ||
@@ -23,7 +22,6 @@ const signup = async (req, res, next) => {
   });
   try {
     await user.save();
-    console.log(user);
     res.json("Signup Successful");
   } catch (error) {
     next(error)
