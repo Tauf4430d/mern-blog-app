@@ -14,18 +14,18 @@ export default function PostPage() {
       try {
         setLoading(true)
         const res = await fetch(`/api/post/getPosts?slug=${postSlug}`)
-        const data = await res.json()
         if(!res.ok) {
           setError(true)
           setLoading(false)
           return
         }
+        const data = await res.json()
         if(res.ok) {
           setPost(data.posts[0])
           setLoading(false)
           setError(false)
+          
         }
-        
       } catch (error) {
         setError(true)
         setLoading(false)
@@ -60,7 +60,7 @@ export default function PostPage() {
     <div className="max-w-4xl mx-auto w-full">
       <CallToAction />
     </div>
-    <CommentSection postId={post._id} />
+    <CommentSection postId = {post._id} />
    </main>
   )
 }
