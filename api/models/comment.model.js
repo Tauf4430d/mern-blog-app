@@ -13,7 +13,15 @@ const commentSchem = new mongoose.Schema({
   userId: {
     type:String,
     required:true,
-  }
+  },
+  likes: {
+    type:Array,
+    default: [],
+  },
+  numberOfLikes: {
+    type:Number,
+    default: 0,
+  },
 }, { timestamps: true })
 
 const COMMENT = mongoose.model('comment', commentSchem)

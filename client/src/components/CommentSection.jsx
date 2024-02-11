@@ -1,13 +1,14 @@
 import { Alert, Button, TextInput, Textarea } from 'flowbite-react'
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import Comment from './Comment'
 export default function CommentSection({postId}) {
   const { currentUser } = useSelector((state) => state.user)
   const [comment, setComment] = useState('')
   const [commentError, setCommentError] = useState(null)
   const [comments, setComments] = useState([])
+  const navigate = useNavigate()
   useEffect(() => {
     const fetchComments = async () => {
      try{
@@ -36,7 +37,7 @@ export default function CommentSection({postId}) {
         },
         body: JSON.stringify({ content : comment, postId, userId: currentUser._id}),
       })
-      const data = res.json()
+      const data = await res.json()
       if(res.ok) {
         setComment('')
         setCommentError(null)
@@ -46,6 +47,31 @@ export default function CommentSection({postId}) {
         setCommentError(error.message)
       }
   }
+
+  const handleLike = async (commentId) => {
+    try {
+      if(!currentUser) {
+        navigate('/signin')
+        return
+      }
+      const res = await fetch(`/api/comment/likeComment/${commentId}`, {
+        method:'PUT',
+      })
+      if(res.ok) {
+        const data = await res.json()
+        setComments(comments.map((comment) => 
+          comment._id === commentId ? {
+            ...comment,
+            likes:data.likes,
+            numberOfLikes: data.numberOfLikes,
+          } : comment
+        ))
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
+
   return (
     <div className='max-w-2xl mx-auto w-full p-3'>
       {
@@ -98,7 +124,7 @@ export default function CommentSection({postId}) {
           </div>
           {
             comments.map((comment) => (
-              <Comment key={comment._id} comment={comment}/>
+              <Comment key={comment._id} comment={comment} onLike={handleLike}/>
             ))
           }
           </>
