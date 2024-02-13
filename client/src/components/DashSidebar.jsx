@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { Link, useLocation } from "react-router-dom"
 import { Sidebar } from 'flowbite-react'
 import { signoutSuccess } from "../redux/user/userSlice"
-import { HiAnnotation, HiArrowSmRight, HiDocumentText, HiOutlineUserGroup, HiUser} from 'react-icons/hi'
+import { HiAnnotation, HiArrowRight, HiArrowSmRight, HiChartPie, HiDocumentText, HiOutlineUserGroup, HiUser} from 'react-icons/hi'
 import { useDispatch, useSelector } from "react-redux"
 export default function DashSidebar() {
   const { currentUser } = useSelector(state => state.user)
@@ -42,6 +42,16 @@ export default function DashSidebar() {
                 Profile
             </Sidebar.Item>
             </Link>
+            {currentUser.isAdmin && (
+              <Link to='/dashboard?tab=dash'>
+              <Sidebar.Item 
+                active={tab === 'dash' || !tab}
+                icon={HiChartPie}
+                as='div'>
+                  DashBoard
+                </Sidebar.Item>
+            </Link>
+            )}
             {currentUser.isAdmin && (
               <Link to='/dashboard?tab=posts'>
               <Sidebar.Item 
